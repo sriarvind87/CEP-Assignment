@@ -54,7 +54,7 @@ pub mod pallet {
 	impl<T: Config> Pallet<T> {
 
 		/// Add a member in the club.
-		#[pallet::weight(40_000_000)]
+		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
 		pub fn add_member(origin: OriginFor<T>, who: T::AccountId) -> DispatchResult {
 			ensure_root(origin.clone())?;
 
@@ -71,7 +71,7 @@ pub mod pallet {
 		}
 
 		/// Remove a member from the club.
-		#[pallet::weight(40_000_000)]
+		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
 		pub fn remove_member(origin: OriginFor<T>, who: T::AccountId) -> DispatchResult {
 			ensure_root(origin.clone())?;
 
