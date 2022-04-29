@@ -28,18 +28,9 @@ pub mod pallet {
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
-	#[derive(
-	Eq, PartialEq, Clone, Copy, Encode, Decode, RuntimeDebug, MaxEncodedLen, TypeInfo,
-	)]
-	pub enum Club {
-		A,
-		B,
-	}
-
 	#[pallet::storage]
 	#[pallet::getter(fn clubmembers)]
 	pub type ClubMembers<T: Config> = StorageValue<_, Vec<T::AccountId>, ValueQuery>;
-
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -63,7 +54,7 @@ pub mod pallet {
 	impl<T: Config> Pallet<T> {
 
 		/// Add a member in the club.
-		#[pallet::weight(50_000_000)]
+		#[pallet::weight(40_000_000)]
 		pub fn add_member(origin: OriginFor<T>, who: T::AccountId) -> DispatchResult {
 			ensure_root(origin.clone())?;
 
@@ -80,7 +71,7 @@ pub mod pallet {
 		}
 
 		/// Remove a member from the club.
-		#[pallet::weight(50_000_000)]
+		#[pallet::weight(40_000_000)]
 		pub fn remove_member(origin: OriginFor<T>, who: T::AccountId) -> DispatchResult {
 			ensure_root(origin.clone())?;
 
