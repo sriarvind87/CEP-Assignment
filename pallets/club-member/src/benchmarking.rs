@@ -1,20 +1,34 @@
 //! Benchmarking setup for pallet-club-member
 
-use super::*;
-
-#[allow(unused)]
-use crate::Pallet as ClubMember;
-use frame_benchmarking::{benchmarks, whitelisted_caller};
+use super::{Pallet as ClubMember, *};
+use frame_benchmarking::{account, benchmarks_instance_pallet, whitelist};
+use frame_support::{assert_ok, traits::EnsureOrigin};
 use frame_system::RawOrigin;
 
-benchmarks! {
-	do_something {
-		let s in 0 .. 100;
-		let caller: T::AccountId = whitelisted_caller();
-	}: _(RawOrigin::Signed(caller), s)
-	verify {
-		assert_eq!(ClubMembers::<T>::get(), Some(s));
-	}
+const SEED: u32 = 0;
 
-	impl_benchmark_test_suite!(Template, crate::mock::new_test_ext(), crate::mock::Test);
-}
+benchmarks_instance_pallet! {
+		add_member {
+			let members = (0..m).map(|i| account("member", i, SEED)).collect::<Vec<T::AccountId>>();
+			set_members::<T>(members.clone(), None);
+			let new_member = account::<T::AccountId>("add", m, SEED);
+		}: {
+			assert_ok!(ClubMember::<T>::add_member(T::AddOrigin::successful_origin(), new_member.clone()));
+		}
+		verify {
+			assert!(ClubMembers::<T>::get().contains(&new_member));
+			#[cfg(test)] crate::tests::clean();
+		}
+
+
+		remove_member {
+			let members = (0..m).map(|i| account("member", i, SEED)).collect::<Vec<T::AccountId>>();
+			set_members::<T>(members.clone(), Some(members.len() - 1));
+			let to_remove = members.first().cloned().unwrap();
+		}: {
+			assert_ok!(ClubMembers<T>::remove_member(T::RemoveOrigin::successful_origin(), to_remove.clone()));
+		} verify {
+			assert!(!ClubMembers<T>::get().contains(&to_remove));
+			#[cfg(test)] crate::tests::clean();
+		}
+	}
