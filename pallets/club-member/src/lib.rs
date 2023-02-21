@@ -53,6 +53,8 @@ pub mod pallet {
 		AlreadyMember,
 		/// Not a member
 		NotMember,
+		/// If a member try to remove some other member
+		CannotRemoveOtherMember,
 	}
 
 	#[pallet::call]
@@ -90,6 +92,23 @@ pub mod pallet {
 
 			Self::deposit_event(Event::MemberRemoved);
 			Ok(())
+		}
+
+		#[pallet::weight(10_000)]
+		pub fn remove_member_by_yourself(origin: OriginFor<T>, who: T::AccountId) -> DispatchResult {
+			// check origin should be signed.
+			let check_account = ensure_signed(origin.clone())?;
+
+				ensure!(who == check_account, Error::<T>::CannotRemoveOtherMember);
+				let mut club_members = ClubMembers::<T>::get();
+				let location = club_members.binary_search(&who).ok().ok_or(Error::<T>::NotMember)?;
+
+				club_members.remove(location);
+
+				ClubMembers::<T>::put(&club_members);
+
+				Self::deposit_event(Event::MemberRemoved);
+				Ok(())
 		}
 	}
 }
