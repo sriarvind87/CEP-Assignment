@@ -78,7 +78,6 @@ pub mod pallet {
 
 
 		// Remove a member from the club.
-
 		#[pallet::weight(10_000)]
 		pub fn remove_member(origin: OriginFor<T>, who: T::AccountId) -> DispatchResult {
 			ensure_root(origin.clone())?;
