@@ -1,0 +1,17 @@
+fn add_member(group: &mut Vec<String>) {
+    if group.len() < 2 {
+        let mut input = String::new();
+        println!("Enter your username: ");
+        std::io::stdin().read_line(&mut input).expect("Failed to read input.");
+        let username = input.trim().to_string();
+        group.push(username);
+        println!("{} has been added to the group.", username);
+    } else {
+        println!("Group size is already 2 or more. Cannot add more members.");
+    }
+}
+
+
+
+
+
